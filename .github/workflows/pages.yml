@@ -18,15 +18,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
       - name: Instalar dependencias
         run: bun install --frozen-lockfile || bun install
       - name: Construir versión estática
         run: bun run build
         env:
           STATIC_EXPORT: "1"
-          NITRO_PRESET: static
+          NITRO_PRESET: node-server
       - name: Localizar la carpeta publicable
         run: |
           OUT=""
@@ -36,14 +39,17 @@ jobs:
           if [ -z "$OUT" ]; then
             echo "No se ha encontrado index.html. Archivos HTML generados:"
             find . -name '*.html' -not -path './node_modules/*' | head -50
+            echo "Contenido de .output y dist:"
+            ls -R .output dist 2>/dev/null | head -80
             exit 1
           fi
           echo "Publicando $OUT"
+          ls "$OUT"
           touch "$OUT/.nojekyll"
           [ -f "$OUT/404.html" ] || cp "$OUT/index.html" "$OUT/404.html"
           # Cuando tengas dominio, crea public/CNAME con el dominio (por ejemplo brosalb.es)
           echo "OUT=$OUT" >> "$GITHUB_ENV"
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: ${{ env.OUT }}
 
