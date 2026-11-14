@@ -17,6 +17,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
       - uses: oven-sh/setup-bun@v2
@@ -26,36 +27,27 @@ jobs:
       - name: Instalar dependencias
         run: bun install --frozen-lockfile || bun install
       - name: Construir versión estática
-        run: bun run build
-        env:
-          STATIC_EXPORT: "1"
-          NITRO_PRESET: node-server
-      - name: Localizar la carpeta publicable
+        run: bunx vite build --config vite.static.config.ts
+      - name: Preparar para GitHub Pages
         run: |
-          OUT=""
-          for d in .output/public dist/client dist; do
-            if [ -f "$d/index.html" ]; then OUT="$d"; break; fi
-          done
-          if [ -z "$OUT" ]; then
-            echo "No se ha encontrado index.html. Archivos HTML generados:"
-            find . -name '*.html' -not -path './node_modules/*' | head -50
-            echo "Contenido de .output y dist:"
-            ls -R .output dist 2>/dev/null | head -80
-            exit 1
-          fi
-          echo "Publicando $OUT"
-          ls "$OUT"
+          OUT=dist-static
+          test -f "$OUT/index.html"
           touch "$OUT/.nojekyll"
-          [ -f "$OUT/404.html" ] || cp "$OUT/index.html" "$OUT/404.html"
+          # Las rutas /aviso-legal y /politica-de-privacidad se resuelven en el navegador
+          cp "$OUT/index.html" "$OUT/404.html"
+          mkdir -p "$OUT/aviso-legal" "$OUT/politica-de-privacidad"
+          cp "$OUT/index.html" "$OUT/aviso-legal/index.html"
+          cp "$OUT/index.html" "$OUT/politica-de-privacidad/index.html"
           # Cuando tengas dominio, crea public/CNAME con el dominio (por ejemplo brosalb.es)
-          echo "OUT=$OUT" >> "$GITHUB_ENV"
+          ls -la "$OUT"
       - uses: actions/upload-pages-artifact@v4
         with:
-          path: ${{ env.OUT }}
+          path: dist-static
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
