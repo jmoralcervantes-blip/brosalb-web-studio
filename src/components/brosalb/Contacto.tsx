@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { contactSchema, contactEmailSubject, isSpamContact, services } from '@/lib/contact-schema';
 // Datos de contacto: cámbialos aquí.
 const CONTACT = { phoneDisplay: '637 94 61 34', phoneTel: '+34637946134', whatsapp: '34637946134', email: 'brosalgroup@gmail.com', city: 'Madrid' };
-// Clave pública de Web3Forms (https://web3forms.com). Es segura en el navegador: solo sirve para enviar al email asociado.
-const WEB3FORMS_ACCESS_KEY = 'PEGA_AQUI_TU_CLAVE_WEB3FORMS';
+// Clave pública de Web3Forms (la misma que plenaria.es). Es segura en el navegador: solo sirve para enviar al email asociado.
+const WEB3FORMS_ACCESS_KEY = 'bd91d6ef-0b84-48be-aeee-0c988262a58d';
 // Etiqueta visible distinta del valor interno.
 const serviceLabels: Partial<Record<string, string>> = { 'Web o aplicación': 'Web, tienda online o aplicación' };
 export function Contacto() {
