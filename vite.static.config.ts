@@ -7,7 +7,8 @@ import { fileURLToPath, URL } from 'node:url';
 
 export default defineConfig({
   root: fileURLToPath(new URL('./static-site', import.meta.url)),
-  base: '/',
+  // BASE_PATH lo fija el workflow: '/' con dominio propio, '/<repo>/' en la dirección provisional.
+  base: process.env['BASE_PATH'] || '/',
   publicDir: fileURLToPath(new URL('./public', import.meta.url)),
   plugins: [react(), tailwindcss()],
   resolve: {

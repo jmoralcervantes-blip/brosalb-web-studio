@@ -27,7 +27,11 @@ jobs:
       - name: Instalar dependencias
         run: bun install --frozen-lockfile || bun install
       - name: Construir versión estática
-        run: bunx vite build --config vite.static.config.ts
+        run: |
+          # Con dominio propio (public/CNAME) la web va en la raíz; si no, en /<repo>/
+          if [ -f public/CNAME ]; then export BASE_PATH=/; else export BASE_PATH=/${{ github.event.repository.name }}/; fi
+          echo "BASE_PATH=$BASE_PATH"
+          bunx vite build --config vite.static.config.ts
       - name: Preparar para GitHub Pages
         run: |
           OUT=dist-static

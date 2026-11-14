@@ -38,7 +38,7 @@ const routeTree = rootRoute.addChildren([
   createRoute({ getParentRoute: () => rootRoute, path: '/aviso-legal', component: AvisoLegal }),
   createRoute({ getParentRoute: () => rootRoute, path: '/politica-de-privacidad', component: Privacidad }),
 ]);
-const router = createRouter({ routeTree, scrollRestoration: true });
+const router = createRouter({ routeTree, basepath: import.meta.env.BASE_URL, scrollRestoration: true });
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
