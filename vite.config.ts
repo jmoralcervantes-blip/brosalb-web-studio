@@ -9,10 +9,15 @@
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
+// STATIC_EXPORT=1 (solo en el workflow de GitHub Pages) genera HTML estático de todas las páginas.
+// En Lovable esta variable no existe, así que su vista previa funciona igual que siempre.
+const isStaticExport = process.env.STATIC_EXPORT === "1";
+
 export default defineConfig({
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
     server: { entry: "server" },
+    ...(isStaticExport ? { prerender: { enabled: true, crawlLinks: true } } : {}),
   },
 });

@@ -1,26 +1,46 @@
 import { useState, type FormEvent } from 'react';
-import { useServerFn } from '@tanstack/react-start';
 import { ArrowUpRight, Phone, Mail, MessageCircle, CheckCircle2, MapPin } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
-import { contactSchema, services } from '@/lib/contact-schema';
-import { sendContact } from '@/lib/contact.functions';
+import { contactSchema, contactEmailSubject, isSpamContact, services } from '@/lib/contact-schema';
 // Datos de contacto: cámbialos aquí.
 const CONTACT = { phoneDisplay: '637 94 61 34', phoneTel: '+34637946134', whatsapp: '34637946134', email: 'brosalgroup@gmail.com', city: 'Madrid' };
-// Etiqueta visible distinta del valor guardado, para no tener que cambiar la base de datos.
+// Clave pública de Web3Forms (https://web3forms.com). Es segura en el navegador: solo sirve para enviar al email asociado.
+const WEB3FORMS_ACCESS_KEY = 'PEGA_AQUI_TU_CLAVE_WEB3FORMS';
+// Etiqueta visible distinta del valor interno.
 const serviceLabels: Partial<Record<string, string>> = { 'Web o aplicación': 'Web, tienda online o aplicación' };
 export function Contacto() {
- const send = useServerFn(sendContact);
  const [pending, setPending] = useState(false);
  const [success, setSuccess] = useState(false);
  const [error, setError] = useState('');
  async function submit(e: FormEvent<HTMLFormElement>) {
    e.preventDefault(); if (pending) return;
    const form = e.currentTarget;
-   const data = contactSchema.safeParse(Object.fromEntries(new FormData(form)));
-   if (!data.success) { setError(data.error.issues[0]?.message ?? 'Revisa los campos.'); return; }
+   const parsed = contactSchema.safeParse(Object.fromEntries(new FormData(form)));
+   if (!parsed.success) { setError(parsed.error.issues[0]?.message ?? 'Revisa los campos.'); return; }
+   const data = parsed.data;
+   if (isSpamContact(data)) { setSuccess(true); form.reset(); return; }
    setPending(true); setError('');
-   try { const result = await send({ data: data.data }); if (result.success) { setSuccess(true); form.reset(); } else setError(result.message); }
+   try {
+     const res = await fetch('https://api.web3forms.com/submit', {
+       method: 'POST',
+       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+       body: JSON.stringify({
+         access_key: WEB3FORMS_ACCESS_KEY,
+         subject: contactEmailSubject(serviceLabels[data.servicio] ?? data.servicio),
+         from_name: 'Web Brosalb',
+         replyto: data.email,
+         Nombre: data.nombre,
+         Email: data.email,
+         'Teléfono': data.telefono || '—',
+         Servicio: serviceLabels[data.servicio] ?? data.servicio,
+         Mensaje: data.mensaje,
+       }),
+     });
+     const result = await res.json().catch(() => null);
+     if (res.ok && result?.success) { setSuccess(true); form.reset(); }
+     else setError('No se ha podido enviar el mensaje. Escríbenos por WhatsApp o al email.');
+   }
    catch { setError('No se ha podido enviar. Inténtalo de nuevo.'); }
    finally { setPending(false); }
  }

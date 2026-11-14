@@ -1,0 +1,58 @@
+name: Publicar en GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - name: Instalar dependencias
+        run: bun install --frozen-lockfile || bun install
+      - name: Construir versión estática
+        run: bun run build
+        env:
+          STATIC_EXPORT: "1"
+          NITRO_PRESET: static
+      - name: Localizar la carpeta publicable
+        run: |
+          OUT=""
+          for d in .output/public dist/client dist; do
+            if [ -f "$d/index.html" ]; then OUT="$d"; break; fi
+          done
+          if [ -z "$OUT" ]; then
+            echo "No se ha encontrado index.html. Archivos HTML generados:"
+            find . -name '*.html' -not -path './node_modules/*' | head -50
+            exit 1
+          fi
+          echo "Publicando $OUT"
+          touch "$OUT/.nojekyll"
+          [ -f "$OUT/404.html" ] || cp "$OUT/index.html" "$OUT/404.html"
+          # Cuando tengas dominio, crea public/CNAME con el dominio (por ejemplo brosalb.es)
+          echo "OUT=$OUT" >> "$GITHUB_ENV"
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ env.OUT }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
