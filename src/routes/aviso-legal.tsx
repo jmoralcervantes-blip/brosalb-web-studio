@@ -1,0 +1,3 @@
+import { createFileRoute } from '@tanstack/react-router';
+import { LegalPage } from '@/components/brosalb/LegalPage';
+export const Route = createFileRoute('/aviso-legal')({ head: () => ({ meta: [{ title: 'Aviso legal | Brosalb' }, { name: 'description', content: 'Información legal de la web de Brosalb. Texto provisional pendiente de revisión.' }, { property: 'og:title', content: 'Aviso legal | Brosalb' }, { property: 'og:description', content: 'Información legal de Brosalb.' }, { property: 'og:type', content: 'website' }, { name: 'twitter:card', content: 'summary_large_image' }] }), component: LegalPage });

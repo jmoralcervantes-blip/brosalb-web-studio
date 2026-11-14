@@ -28,3 +28,8 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Application structure
+- Keep the homepage in eight section components under `src/components/brosalb` and use anchors for its navigation; the requested experience is one scrolling page.
+- Keep contact validation shared between browser and server, and write via a public server function using an insert-only publishable client; visitor data must never be readable publicly.
+- Keep email notification preparation server-only and sending disabled until the owner supplies a recipient and a verified domain; stored contacts must not depend on email availability.
