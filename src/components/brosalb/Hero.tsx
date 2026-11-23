@@ -2,18 +2,17 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { MapPin, Search } from 'lucide-react';
 import living from '@/assets/renovation-after.jpg';
 import building from '@/assets/brosalb-building.jpg';
+import digital from '@/assets/hero-digital.svg';
 import { prefillContact, requestValuation } from '@/lib/prefill-contact';
 
 // Tiempo de cada diapositiva cuando avanzan solas.
 const SLIDE_MS = 7000;
 const HOME = import.meta.env.BASE_URL;
-// Foto de un proyecto real (tienda online ChronoWall). Cámbiala por otra si prefieres.
-const DIGITAL_IMG = 'https://chronowall.es/cdn/shop/files/reloj_salon_difuminado.png?v=1781259748&width=1600';
 
 const slides = [
   { tab: 'Compra y alquiler', caption: 'Te compramos tu vivienda o la gestionamos por ti', image: living },
   { tab: 'Reformas', caption: 'Integrales y parciales, con un solo interlocutor', image: building },
-  { tab: 'IA, redes y webs', caption: 'Agentes de IA, contenido y webs para tu negocio', image: DIGITAL_IMG },
+  { tab: 'IA, redes y webs', caption: 'Agentes de IA, contenido y webs para tu negocio', image: digital },
 ];
 
 function useReducedMotion() {
