@@ -1,5 +1,50 @@
-import { ArrowDown, ArrowUpRight, Building2, Sparkles } from 'lucide-react';
-import building from '@/assets/brosalb-building.jpg';
+import type { FormEvent } from 'react';
+import { MapPin, Search } from 'lucide-react';
+import living from '@/assets/renovation-after.jpg';
+import { requestValuation } from '@/lib/prefill-contact';
+
+// Datos reales de Brosalb (no cifras inventadas). Cámbialos aquí.
+const stats = [
+  { value: 'Compra y alquiler', label: 'Te compramos tu vivienda o la gestionamos por ti' },
+  { value: 'Reformas', label: 'Integrales y parciales, con un solo interlocutor' },
+  { value: '< 24 h', label: 'Para responder a tu consulta' },
+];
+
 export function Hero() {
- return <section className="hero"><img className="hero-image" src={building} alt="Fachada mediterránea con balcones y contraventanas verdes, imagen de ejemplo" width={1920} height={1024} fetchPriority="high"/><div className="container hero-content"><p className="eyebrow">BROSALB · INMOBILIARIA & DIGITAL</p><h1>Hacemos crecer<br/>espacios <em>y marcas.</em></h1><p className="hero-description">En Brosalb unimos inmuebles, reformas y estrategia digital para que cada proyecto valga más.</p><a className="hero-discover" href="#inmobiliaria">Descubre lo que podemos hacer <ArrowDown size={17}/></a></div><div className="container hero-areas"><a href="#inmobiliaria" className="area-card"><Building2 className="area-icon"/><div><span className="eyebrow">ESPACIOS CON FUTURO</span><h2>Inmobiliaria</h2><p>Alquiler, compraventa y reformas.</p></div><ArrowUpRight className="area-arrow"/></a><a href="#digital" className="area-card"><Sparkles className="area-icon"/><div><span className="eyebrow">MARCAS CON PROPÓSITO</span><h2>Digital</h2><p>Redes, publicidad, webs, tiendas online e inteligencia artificial.</p></div><ArrowUpRight className="area-arrow"/></a></div></section>;
+  function submit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const input = e.currentTarget.elements.namedItem('direccion') as HTMLInputElement | null;
+    requestValuation(input?.value ?? '');
+  }
+
+  return (
+    <section className="hero" aria-labelledby="hero-title">
+      <div className="hero-frame">
+        <img src={living} alt="" width={1536} height={1024} fetchPriority="high" />
+        <div className="hero-shade" aria-hidden="true" />
+        <div className="hero-copy">
+          <h1 id="hero-title">Tu casa. Tus opciones.</h1>
+          <p>
+            Escribe la dirección y te decimos cuánto vale tu vivienda.
+            <br />
+            Te la compramos, la reformamos o la alquilamos por ti.
+          </p>
+          <form id="hero-search" className="address-field" onSubmit={submit} role="search">
+            <MapPin className="address-pin" size={20} aria-hidden="true" />
+            <input name="direccion" placeholder="Escribe la dirección de tu vivienda" aria-label="Dirección de tu vivienda" autoComplete="street-address" />
+            <button className="btn-square" type="submit" aria-label="Pedir valoración"><Search size={20} /></button>
+          </form>
+          <p className="hero-micro">Gratis y sin compromiso <span aria-hidden="true">│</span> Tus datos solo se usan para responderte</p>
+        </div>
+        <dl className="hero-stats">
+          {stats.map(s => (
+            <div key={s.value}>
+              <dt>{s.value}</dt>
+              <dd>{s.label}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </section>
+  );
 }

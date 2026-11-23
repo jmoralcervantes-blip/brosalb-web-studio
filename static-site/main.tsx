@@ -6,7 +6,7 @@ import '@/styles.css';
 import { Header } from '@/components/brosalb/Header';
 import { Hero } from '@/components/brosalb/Hero';
 import { Inmobiliaria } from '@/components/brosalb/Inmobiliaria';
-import { Puente } from '@/components/brosalb/Puente';
+import { Vender } from '@/components/brosalb/Vender';
 import { Digital } from '@/components/brosalb/Digital';
 import { Proyectos } from '@/components/brosalb/Proyectos';
 import { Contacto } from '@/components/brosalb/Contacto';
@@ -26,7 +26,7 @@ function Home() {
     const id = window.location.hash.slice(1);
     if (id) requestAnimationFrame(() => document.getElementById(id)?.scrollIntoView());
   }, []);
-  return <><Header /><main><Hero /><Inmobiliaria /><Puente /><Digital /><Proyectos /><Contacto /></main><Footer /></>;
+  return <><Header /><main><Hero /><Vender /><Inmobiliaria /><Digital /><Proyectos /><Contacto /></main><Footer /></>;
 }
 
 function AvisoLegal() { useTitle('Aviso legal | Brosalb'); return <LegalPage />; }

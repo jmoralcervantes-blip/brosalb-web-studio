@@ -1,11 +1,56 @@
-import { KeyRound, House, Hammer, ArrowUpRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import building from '@/assets/brosalb-building.jpg';
+import { useState } from 'react';
+import { House, KeyRound, Hammer, ChevronsLeftRight } from 'lucide-react';
 import before from '@/assets/renovation-before.jpg';
-const alquilerFoto = 'https://images.squarespace-cdn.com/content/v1/676d8cb3b5df674bf5981fc1/689fc3a2-af3e-4262-aed6-244dd4df3de0/IMG_8515.jpeg?format=1500w';
-const items = [
- { title: 'Alquiler', icon: KeyRound, image: alquilerFoto, ejemplo: false, alt: 'Dormitorio de uno de nuestros apartamentos en Albacete', text: 'Alquilamos inmuebles propios y gestionamos los de propietarios que quieren olvidarse del día a día: búsqueda de inquilinos, contratos, incidencias y seguimiento.' },
- { title: 'Compraventa', icon: House, image: building, ejemplo: true, alt: 'Compraventa — imagen de ejemplo', text: 'Compramos y vendemos inmuebles. Si quieres vender, te hacemos una valoración realista y sin compromiso.' },
- { title: 'Reformas', icon: Hammer, image: before, ejemplo: true, alt: 'Reformas — imagen de ejemplo', text: 'Reformas integrales y parciales de viviendas, locales y edificios. Un único interlocutor de principio a fin.' },
+import after from '@/assets/renovation-after.jpg';
+import { prefillContact, requestValuation } from '@/lib/prefill-contact';
+
+const services = [
+  { icon: House, title: 'Compraventa', text: 'Compramos viviendas para reformarlas y darles una segunda vida. Si quieres vender, te hacemos una valoración realista y sin compromiso.' },
+  { icon: KeyRound, title: 'Alquiler y gestión', text: 'Alquilamos inmuebles propios y gestionamos los de propietarios que quieren olvidarse del día a día: inquilinos, contratos e incidencias.' },
+  { icon: Hammer, title: 'Reformas', text: 'Reformas integrales y parciales de viviendas, locales y edificios. Un único interlocutor de principio a fin.' },
 ];
-export function Inmobiliaria() { return <section id="inmobiliaria" className="section container"><div className="section-heading"><div><p className="eyebrow">01 / INMOBILIARIA</p><h2>Inmobiliaria</h2></div><p>Gestionamos inmuebles propios y de terceros con un objetivo: que rindan más y den menos preocupaciones.</p></div><div className="property-grid">{items.map(({ title, icon: Icon, image, ejemplo, alt, text }) => <article className="property-card" key={title}><div className="property-image"><img src={image} alt={alt} loading="lazy" width={1536} height={1024}/>{ejemplo && <span>Imagen de ejemplo</span>}</div><div className="property-title"><Icon size={23}/><h3>{title}</h3></div><p>{text}</p></article>)}</div><Button asChild variant="outline" className="section-cta"><a href="#contacto">Cuéntanos qué necesitas <ArrowUpRight/></a></Button></section>; }
+
+export function Inmobiliaria() {
+  const [position, setPosition] = useState(50);
+  return (
+    <section id="inmobiliaria" className="section container">
+      <div className="section-head">
+        <div>
+          <p className="kicker">Inmobiliaria y reformas</p>
+          <h2 className="h2">Compramos, reformamos <span>y ponemos en valor</span></h2>
+        </div>
+        <p>Nuestra experiencia en inmuebles y en obra nos permite ver el potencial donde otros ven un problema.</p>
+      </div>
+      <div className="estate-grid">
+        <figure className="compare-wrap">
+          <div className="compare">
+            <img src={after} alt="Después: salón reformado (imagen de ejemplo)" width={1536} height={1024} loading="lazy" />
+            <img className="compare-before" src={before} alt="Antes: salón sin reformar (imagen de ejemplo)" width={1536} height={1024} loading="lazy" style={{ clipPath: `inset(0 ${100 - position}% 0 0)` }} />
+            <span className="compare-label is-before">Antes</span>
+            <span className="compare-label is-after">Después</span>
+            <div className="compare-line" style={{ left: `${position}%` }}><span><ChevronsLeftRight size={20} /></span></div>
+            <input type="range" min="0" max="100" value={position} onChange={e => setPosition(Number(e.target.value))} aria-label="Comparar antes y después" />
+          </div>
+          <figcaption>Comparación ilustrativa · imágenes de ejemplo, no de una obra real</figcaption>
+        </figure>
+        <div>
+          <ul className="services-list">
+            {services.map(({ icon: Icon, title, text }) => (
+              <li key={title}>
+                <span className="tile"><Icon size={20} /></span>
+                <div>
+                  <h3>{title}</h3>
+                  <p>{text}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <div className="btn-row">
+            <button type="button" className="btn btn-primary" onClick={() => requestValuation('')}>Pide tu valoración</button>
+            <button type="button" className="btn btn-secondary" onClick={() => prefillContact('Reforma', 'Me gustaría pedir presupuesto para una reforma.')}>Presupuesto de reforma</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
