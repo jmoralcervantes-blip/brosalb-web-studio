@@ -50,7 +50,7 @@ export function Header() {
       <header className={`site-header${compact ? ' is-compact' : ''}`}>
         <div className="container header-inner">
           <a className="wordmark" href={HOME}>Brosalb</a>
-          <form className={`header-search${compact ? ' is-visible' : ''}`} onSubmit={submit} role="search" inert={!compact}>
+          <form className={`header-search${compact ? ' is-visible' : ''}`} onSubmit={submit} role="search" inert={!compact} style={{ minWidth: 0 }}>
             <MapPin size={16} aria-hidden="true" />
             <input name="direccion" placeholder="Dirección de tu vivienda" aria-label="Dirección de tu vivienda" autoComplete="street-address" />
             <button type="submit" aria-label="Pedir valoración"><Search size={16} /></button>
@@ -59,7 +59,7 @@ export function Header() {
             {links.map(l => <a key={l.id} href={`${HOME}#${l.id}`}>{l.label}</a>)}
           </nav>
           <a className="btn btn-secondary header-cta" href={`${HOME}#contacto`}>Contacto</a>
-          <button type="button" className="mobile-toggle" aria-label={open ? 'Cerrar menú' : 'Abrir menú'} aria-expanded={open} onClick={() => setOpen(!open)}>
+          <button type="button" className="mobile-toggle" style={{ flexShrink: 0 }} aria-label={open ? 'Cerrar menú' : 'Abrir menú'} aria-expanded={open} onClick={() => setOpen(!open)}>
             {open ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>

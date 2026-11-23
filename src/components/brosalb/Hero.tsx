@@ -25,7 +25,7 @@ export function Hero() {
         <div className="hero-copy">
           <h1 id="hero-title">Tu casa. Tus opciones.</h1>
           <p>
-            Escribe la dirección y te decimos cuánto vale tu vivienda.
+            Escribe la dirección y te decimos cuánto vale tu vivienda.{' '}
             <br />
             Te la compramos, la reformamos o la alquilamos por ti.
           </p>
