@@ -2,17 +2,18 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { MapPin, Search } from 'lucide-react';
 import living from '@/assets/renovation-after.jpg';
 import building from '@/assets/brosalb-building.jpg';
-import digital from '@/assets/hero-digital.svg';
 import { prefillContact, requestValuation } from '@/lib/prefill-contact';
 
 // Tiempo de cada diapositiva cuando avanzan solas.
 const SLIDE_MS = 7000;
 const HOME = import.meta.env.BASE_URL;
 
-const slides = [
-  { tab: 'Compra y alquiler', caption: 'Te compramos tu vivienda o la gestionamos por ti', image: living },
-  { tab: 'Reformas', caption: 'Integrales y parciales, con un solo interlocutor', image: building },
-  { tab: 'IA, redes y webs', caption: 'Agentes de IA, contenido y webs para tu negocio', image: digital },
+// Fotos de portada: si subes public/hero-reformas.jpg o public/hero-ia.jpg se usan solas.
+// Mientras no existan, se muestra la imagen de respaldo (fallback) o, si no hay, el fondo marrón.
+const slides: { tab: string; caption: string; image: string; fallback: string | null }[] = [
+  { tab: 'Compra y alquiler', caption: 'Te compramos tu vivienda o la gestionamos por ti', image: living, fallback: null },
+  { tab: 'Reformas', caption: 'Integrales y parciales, con un solo interlocutor', image: `${HOME}hero-reformas.jpg`, fallback: building },
+  { tab: 'IA, redes y webs', caption: 'Agentes de IA, contenido y webs para tu negocio', image: `${HOME}hero-ia.jpg`, fallback: null },
 ];
 
 function useReducedMotion() {
@@ -51,7 +52,20 @@ export function Hero() {
     <section className="hero" aria-labelledby="hero-title">
       <div className="hero-frame">
         {slides.map((s, i) => (
-          <img key={s.tab} className={`hero-bg${i === active ? ' is-active' : ''}`} src={s.image} alt="" width={1536} height={1024} fetchPriority={i === 0 ? 'high' : 'low'} />
+          <img
+            key={s.tab}
+            className={`hero-bg${i === active ? ' is-active' : ''}`}
+            src={s.image}
+            alt=""
+            width={1536}
+            height={1024}
+            fetchPriority={i === 0 ? 'high' : 'low'}
+            onError={e => {
+              const img = e.currentTarget;
+              if (s.fallback && img.src !== new URL(s.fallback, window.location.href).href) img.src = s.fallback;
+              else img.style.display = 'none';
+            }}
+          />
         ))}
         <div className="hero-shade" aria-hidden="true" />
         <div className="hero-slides" onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}>
